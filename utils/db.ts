@@ -5,8 +5,7 @@ const dburl:string = process.env.DB_URL || '';
 
 const connDB = async() => {
     try{
-        
-        await mongoose.connect(dburl).then((data: any) => {
+        await mongoose.connect(dburl).then((data: any) => {            
             console.log(`Database connected with port ${process.env.PORT}`)
         });
         

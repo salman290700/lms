@@ -1,10 +1,11 @@
+import { json } from "stream/consumers";
+
 class ErrorHandler extends Error {
     statusCode: Number;
     constructor(message:any, statusCode:Number) {
         super(message)
-        this.statusCode = statusCode
-        ErrorHandler.captureStackTrace(this, this.constructor)
+        this.statusCode = statusCode;
+        ErrorHandler.captureStackTrace(this, this.constructor);
     }
 };
-
-module.exports = ErrorHandler;
+export default ErrorHandler;

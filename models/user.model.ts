@@ -1,9 +1,10 @@
 import bcrypt from "bcryptjs"
 import { timeStamp } from "console";
 import mongoose from "mongoose";
-import monggose, {Document, Model, Schema} from  "mongoose"
+import monggose, {Document, Model, Schema} from  "mongoose";
+import jwt from "jsonwebtoken";
 
-const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+s/;
+const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export interface IUser extends Document{
     email: string;
@@ -17,6 +18,8 @@ export interface IUser extends Document{
     isVerified: boolean;
     courses: Array<{courseId:string}>;
     comparePassword: (password: string) => Promise<boolean>;
+    SignAccessToken: () => string;
+    SignRefreshToken: () => string;
 }
 
 const userSchema: Schema<IUser> = new monggose.Schema({
@@ -33,7 +36,7 @@ const userSchema: Schema<IUser> = new monggose.Schema({
             },
             message: "Please enter a valid email"
         },
-        unique: true,        
+        unique: true,
     },
     password: {
         type:String,
@@ -67,6 +70,17 @@ userSchema.pre<IUser>('save', async function(next){
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
+
+// Sign Access Token
+//  Sign Refresh Token
+userSchema.methods.SignAccessToken = function () {
+    return jwt.sign({id: this._id}, process.env.ACCESS_TOKEN || '');
+}
+
+//  Sign Refresh Token
+userSchema.methods.SignRefreshToken = function () {
+    return jwt.sign({id: this._id}, process.env.REFRESH_TOKEN || '');
+}
 
 // compare password
 
